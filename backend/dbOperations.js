@@ -15,7 +15,7 @@ const readUserDetails = async(docName,filter)=>{
     let filterData = filter!==undefined?filter:{};
     return await db.collection(docName).find(filterData).toArray();
 }
-async function main(database,collectionName,operation,data){
+async function main(database,collectionName,operation,data,filter){
     const client = new MongoClient(URI);
     try{
         await client.connect();
@@ -23,10 +23,12 @@ async function main(database,collectionName,operation,data){
         // await  listDatabases(client);
         console.log("connected");
         if(operation === "insert"){
-            await insertUserDetails(collectionName,data);
+            let insertedData = await insertUserDetails(collectionName,data);
+            return insertedData;
         }
         else if (operation === "read"){
-            await readUserDetails(collectionName,filter).then(data=>console.log(data));
+            let readData = await readUserDetails(collectionName,filter);
+            return readData;
         }
     }
     catch(e){
