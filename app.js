@@ -4,14 +4,19 @@ const User = require("./models/userSchema.js");
 
 const app = express();
 
+app.use(express.json());
+
 app.post("/signup", async(req, res) => {
-    const user = new User({
-        name:"aswin",
-        age:25,
-        email:"aswin@gmail.com",
-        password:"aswin",
-        gender:"male"
-    });
+    // initializing user table in mongodb
+    const user = new User(req.body);
+    const isEmailIdExists = await User.findOne({email: req.body.email});
+    if(isEmailIdExists){
+        res.send({ 
+            status: 400,
+            message: "Email id already exists" 
+        });
+        return;
+    }
     try{
         await user.save();
         res.send({ 
@@ -24,6 +29,33 @@ app.post("/signup", async(req, res) => {
         res.send("User not created");
     }
 })
+
+app.get("/getUser",async(req, res) => {
+    const users = await User.find(req.body);
+    res.send(users);
+});
+
+app.delete("/deleteUser",async(req, res) => {
+    try{
+        await User.findByIdAndDelete({ _id: req.body.id });
+        res.send("user deleted successfully");
+    }
+    catch(e){
+        res.send("user not found");
+        return;
+    }
+});
+
+app.patch("/updateUser",async(req,res)=>{
+    try{
+        await User.findByIdAndUpdate({ _id: req.body.id }, req.body);
+        res.send("user updated successfully");
+    }
+    catch(e){
+        res.send("user not found");
+        return;
+    }
+});
 
 connectDB().then(() => {
     app.listen(3000, () => {
