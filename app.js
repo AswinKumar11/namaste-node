@@ -9,14 +9,6 @@ app.use(express.json());
 app.post("/signup", async(req, res) => {
     // initializing user table in mongodb
     const user = new User(req.body);
-    const isEmailIdExists = await User.findOne({email: req.body.email});
-    if(isEmailIdExists){
-        res.send({ 
-            status: 400,
-            message: "Email id already exists" 
-        });
-        return;
-    }
     try{
         await user.save();
         res.send({ 
@@ -25,8 +17,11 @@ app.post("/signup", async(req, res) => {
             message: "User created successfully" 
         });
     }
-    catch{
-        res.send("User not created");
+    catch(err){
+        res.send({
+            status: 400,
+            message: "User not created : "+err.message
+        });
     }
 })
 

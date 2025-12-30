@@ -7,20 +7,30 @@ const userSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
-        required: true
+        required: true,
+        min: 18
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        lowercase: true,
+        validate:((email) => {
+            return email.match(
+               /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+            );
+        })
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
     },
     gender:{
-        type: String,
-        required: true
+        type: String
     }
+},{
+    timestamps: true
 });
 
 module.exports = mongoose.model("User",userSchema);
