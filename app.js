@@ -3,8 +3,7 @@ const connectDB = require("./src/config/database.js");
 const User = require("./src/models/userSchema.js");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
-const userLoginValidation = require("./src/utils/validation.js");
+const userLoginValidation = require("./src/middlewares/validation.js");
 
 const app = express();
 
@@ -43,9 +42,9 @@ app.post("/login", async(req,res)=>{
     try{
         const user = await User.findOne({emailId:emailId});
         if(user){
-            const isPasswordCorrect = await bcrypt.compare(password, user.password);
+            const isPasswordCorrect = await user.validatePassword(password);
             if(isPasswordCorrect){
-                const token = await jwt.sign({_id:user._id}, "secretKey",{expiresIn:"7d"});
+                const token = await user.getJWTToken();
                 res.cookie("loginToken",token, {expires: new Date(Date.now() + 7*24*60*60*1000)});
                 res.send({
                     status: 200,
