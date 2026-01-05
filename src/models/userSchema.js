@@ -12,13 +12,13 @@ const userSchema = new mongoose.Schema({
         required: true,
         min: 18
     },
-    email: {
+    emailId: {
         type: String,
         required: true,
         unique: true,
         lowercase: true,
-        validate:((email) => {
-            return email.match(
+        validate:((emailId) => {
+            return emailId.match(
                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
             );
         })
